@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Diagnostic</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; background:#050807; color:#d7ffe1;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  .scanlines{position:fixed;inset:0;pointer-events:none;opacity:.08;
+    background:repeating-linear-gradient(0deg,transparent 0 3px,#9affb0 4px);
+  }
+  .wrap{width:min(92vw,620px);border:1px solid #1d6330;background:#07100a;
+    box-shadow:0 0 35px rgba(0,255,90,.12),inset 0 0 30px rgba(0,255,90,.04);
+    padding:22px;border-radius:8px;position:relative}
+  .top{display:flex;justify-content:space-between;border-bottom:1px solid #174d25;padding-bottom:14px;margin-bottom:18px}
+  .brand{color:#74ff91;font-weight:800;letter-spacing:1px}
+  .status{font-size:12px;color:#63d97b}
+  .title{font-size:clamp(20px,5vw,30px);margin:8px 0;color:#fff}
+  .sub{color:#7ea987;font-size:12px}
+  .bar{height:14px;border:1px solid #286e38;margin:22px 0 9px;padding:2px}
+  .fill{height:100%;width:0;background:#4cff72;box-shadow:0 0 12px #35ff5f;transition:width .12s linear}
+  .percent{text-align:right;color:#80ff99;font-size:13px}
+  .terminal{height:225px;overflow:hidden;border:1px solid #123d1d;background:#030604;padding:13px;
+    margin-top:18px;font-size:12px;line-height:1.65}
+  .line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ok{color:#65ff87}.warn{color:#ffd76b}.dim{color:#4d7957}
+  .reveal{display:none;text-align:center;padding:26px 8px}
+  .reveal h2{font-size:28px;color:#ffdf6e;margin:5px 0 12px}
+  .reveal p{color:#9ab6a0}
+  button{border:1px solid #4cff72;background:#0b2110;color:#9affaa;padding:12px 18px;
+    border-radius:5px;font:inherit;cursor:pointer}
+  .tiny{margin-top:14px;font-size:10px;color:#3d6648}
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+<main class="wrap" id="app">
+  <div class="top">
+    <div class="brand">SYSTEM DIAGNOSTIC v4.7</div>
+    <div class="status" id="status">INITIALIZING</div>
+  </div>
+
+  <section id="scanner">
+    <div class="title">Security & Device Scan</div>
+    <div class="sub">Automated diagnostic sequence • Simulation mode</div>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+    <div class="percent"><span id="pct">0</span>%</div>
+
+    <div class="terminal" id="terminal"></div>
+    <div class="tiny">No personal data is accessed. This is a visual simulation.</div>
+  </section>
+
+  <section class="reveal" id="reveal">
+    <div style="font-size:46px">⚠️</div>
+    <h2>FRIEND DETECTED</h2>
+    <p>Critical vulnerability found:</p>
+    <p><strong style="color:#fff">You clicked a suspicious link 😂</strong></p>
+    <button onclick="location.reload()">RUN AGAIN</button>
+    <div class="tiny">PRANK COMPLETE • Nothing was scanned or accessed.</div>
+  </section>
+</main>
+
+<script>
+const terminal = document.getElementById('terminal');
+const fill = document.getElementById('fill');
+const pct = document.getElementById('pct');
+const status = document.getElementById('status');
+const scanner = document.getElementById('scanner');
+const reveal = document.getElementById('reveal');
+
+const messages = [
+  ["[INIT] Establishing secure diagnostic channel...", "dim"],
+  ["[OK] Device interface detected", "ok"],
+  ["[SCAN] Checking system environment...", "dim"],
+  ["[OK] Network interface verified", "ok"],
+  ["[SCAN] Analyzing local security status...", "dim"],
+  ["[OK] Security modules responding", "ok"],
+  ["[SCAN] Inspecting application state...", "dim"],
+  ["[OK] No system changes detected", "ok"],
+  ["[SCAN] Searching for suspicious activity...", "dim"],
+  ["[WARN] Unusual friend behavior detected", "warn"],
+  ["[SCAN] Running final identity analysis...", "dim"],
+  ["[ALERT] FRIEND PROFILE MATCH: 100%", "warn"]
+];
+
+let i=0, progress=0;
+
+function addLine(text, cls){
+  const d=document.createElement('div');
+  d.className='line '+cls;
+  d.textContent=text;
+  terminal.appendChild(d);
+  terminal.scrollTop=terminal.scrollHeight;
+}
+
+function tick(){
+  progress += Math.random()*3.2 + 0.8;
+  if(progress > 100) progress=100;
+  fill.style.width=progress+'%';
+  pct.textContent=Math.floor(progress);
+
+  if(i < messages.length && progress >= (i+1)*(100/messages.length)-3){
+    addLine(messages[i][0], messages[i][1]);
+    i++;
+  }
+
+  status.textContent = progress < 100 ? "SCANNING" : "COMPLETE";
+
+  if(progress < 100){
+    setTimeout(tick, 120 + Math.random()*170);
+  } else {
+    setTimeout(()=>{
+      scanner.style.display='none';
+      reveal.style.display='block';
+      status.textContent='RESULT';
+    },900);
+  }
+}
+
+addLine("[BOOT] Starting diagnostic engine...", "dim");
+setTimeout(tick, 500);
+</script>
+</body>
+</html>
